@@ -110,17 +110,36 @@ function add_char(c){
 				}
 				if(pt.name==P.stack[din].name){
 					// They match
-					let ct=comptag(P.stack[din);
+					let ct=comptag(P.stack[din]);
 					let raw=P.stack[din].inner_raw;
 					P.stack.pop();
 					addstring(ct,raw);
 					return;
 				}else{
+					// They don't match
+					on_invalid_tag();
+					return;
+				}
+			}else{
+				// Invalid tag, or any tag inside tags like [code][/code]
+				let israw=P.tags[P.stack[din]].raw;
+				if((!P.tags[pt.name])||israw){
+					on_invalid_tag();
+					return;
+				}else{
+					// Yeah!
+					pt.inner=pt.inner_raw="";
+					P.stack.push(pt);
 				}
 			}
 		}
 	}
 	if(!P.readtag){
+		if(c=="["){
+			P.readtag=true;
+			P.curtag="[";
+			return;
+		}else add_string(c);
 	}
 }
 function add_multi(s){
